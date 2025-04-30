@@ -2,22 +2,57 @@ document.getElementById('loginform').addEventListener('submit',function(e){
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    let mensaje = '';
-    let tipoAlerta = '';
-    if(email === '' || password === ''){
-     mensaje ='Por favor completa los campos.';
-     tipoAlerta = 'warning'
-   }else if(email === 'prueba@gmail.com' && password === '123456'){
-     mensaje = 'Inicio de sesion exitoso.'
-     tipoAlerta = 'success'
-   }else{
-     mensaje = 'Correo o contraseña incorrectos.'
-     tipoAlerta = 'danger'
-   }
+    
+    login(email, password)
+});
 
-   let alerta = `<div class="alert alert-${tipoAlerta} alert-dismissible fade show" role="alert">
-   ${mensaje}
+
+ function login(email, password){
+  localStorage.removeItem('token')
+    let message = ''
+    let alerType = ''
+    const REQRES_ENDPOINT = 'https://reqres.in/api/login'
+
+    fetch(REQRES_ENDPOINT, {
+      method: 'POST' , 
+      headers: {
+        'Content-type' : 'application/json',
+        'x-api-key': 'reqres-free-v1'
+      } , 
+      body: JSON.stringify({email, password})
+    })
+
+    .then((response)  =>{
+      if(response.status === 200){
+        alerType = 'success'
+      message = 'inicio de sesion exitoso'
+      alertBuilder(alerType, message)
+      localStorage.setItem('token' , "abcdefghijklmnopqrstuvwxyz")
+      setTimeout(() => {
+        location.href = 'admin/dashboard.html'
+      }, 2000) //2000 ms = 2 segs
+      
+      }else{
+        alerType = 'danger'
+        message = 'Datos incorrectos, revisalo'
+        alertBuilder(alerType, message)
+      }
+      console.log('respuesta del servicio' , response)
+    })
+
+    .catch((error) =>{
+      alerType = 'danger'
+      message = 'Se ha generado un error'
+      console.log('error en el servicio' , error)
+    })
+
+
+ }
+
+ function alertBuilder(alerType, message){
+  const alert = `<div class="alert alert-${alerType} alert-dismissible fade show" role="alert">
+   ${message}
    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
  </div>`;
-   document.getElementById('mensaje').innerHTML = alerta;
-});
+   document.getElementById('mensaje').innerHTML = alert; 
+ }
