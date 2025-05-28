@@ -27,7 +27,9 @@ document.getElementById('loginform').addEventListener('submit',function(e){
         alerType = 'success'
       message = 'inicio de sesion exitoso'
       alertBuilder(alerType, message)
-      localStorage.setItem('token' , "abcdefghijklmnopqrstuvwxyz")
+      response.json().then((data) =>{
+        localStorage.setItem('token' , data.token)
+      })
       setTimeout(() => {
         location.href = 'admin/dashboard.html'
       }, 2000) //2000 ms = 2 segs
